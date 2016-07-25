@@ -28,9 +28,8 @@ codecom
 
 The gem will automatically find out your name from the git repo and all method params.
 
-Here is the code before:
-
 ## Demo
+Here is the code before:
 
 ```ruby
 module Example
