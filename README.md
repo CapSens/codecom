@@ -1,4 +1,4 @@
-# Capsens—Codecom
+# Capsens—CodeCom
 
 This gem automatically generates YARD compatible pre-documentation comments for your beloved methods.
 
