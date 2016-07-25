@@ -60,9 +60,6 @@ And here is the code automatically commented after:
 ```ruby
 module Example
     class Runner
-        # @engine capsens-codecom
-        # @timing 1469433025
-        #
         # Describe here what the method should be used for.
         # Remember to add use case examples if possible.
         #
@@ -83,9 +80,6 @@ module Example
             }
         end
 
-        # @engine capsens-codecom
-        # @timing 1469433025
-        #
         # Describe here what the method should be used for.
         # Remember to add use case examples if possible.
         #
@@ -101,9 +95,6 @@ module Example
             [ :initialize, :permitted_params ]
         end
 
-        # @engine capsens-codecom
-        # @timing 1469433025
-        #
         # Describe here what the method should be used for.
         # Remember to add use case examples if possible.
         #
