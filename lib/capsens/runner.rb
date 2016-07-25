@@ -1,7 +1,11 @@
 module Capsens
   module Codecom
     class Runner
-      def initialize
+      attr_accessor :ignored_methods
+
+      def initialize(force = false)
+        ignored_methods = [ :initialize, :permitted_params ]
+
         Dir.glob("./**/*.rb").reject { |path| path.include?('app') }.each do |path|
           comments = []
           temp_file = Tempfile.new(SecureRandom.hex)
@@ -12,8 +16,8 @@ module Capsens
                 comments.push(line)
               else
                 if line.strip.start_with?('def ')
-                  condition_0 = Capsens::Codecom.configuration.force_regeneration || comments.none?
-                  condition_1 = Capsens::Codecom.configuration.ignored_methods.include?(extract_method_name(line).to_sym)
+                  condition_0 = force || comments.none?
+                  condition_1 = ignored_methods.include?(extract_method_name(line).to_sym)
 
                   if condition_0 && !condition_1
                     temp_file.print(process_line(line, index))
@@ -70,7 +74,7 @@ module Capsens
       def process_line(line, index)
         method_name = template_options(line).fetch(:method_name)
 
-        unless Capsens::Codecom.configuration.ignored_methods.include?(method_name.to_sym)
+        unless ignored_methods.include?(method_name.to_sym)
           options = [template, template_options(line)]
           replaced_template = replace_template(*options)
           indent_template(replaced_template, line.index('def '))

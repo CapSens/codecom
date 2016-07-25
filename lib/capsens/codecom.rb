@@ -1,4 +1,5 @@
 require 'capsens/codecom/version'
+require 'capsens/codecom/cli'
 require 'capsens/runner'
 require 'securerandom'
 require 'fileutils'
@@ -16,13 +17,6 @@ module Capsens
     end
 
     class Configuration
-      attr_accessor :ignored_methods
-      attr_accessor :force_regeneration
-
-      def initialize
-        @ignored_methods    ||= [ :initialize, :permitted_params ]
-        @force_regeneration ||= false
-      end
     end
   end
 end
