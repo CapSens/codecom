@@ -1,4 +1,4 @@
-# Capsens::Codecom
+# Capsens—CodeCom
 
 This gem automatically generates YARD compatible pre-documentation comments for your beloved methods.
 
@@ -7,7 +7,7 @@ This gem automatically generates YARD compatible pre-documentation comments for 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'capsens-codecom', git: 'git@projects.capsens.eu:engines/capsens-codecom.git'
+gem 'capsens-codecom'
 ```
 
 And then execute:
