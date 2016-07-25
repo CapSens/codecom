@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require 'capsens/codecom'
+Capsens::Codecom::Runner.new

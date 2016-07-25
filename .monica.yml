@@ -1,0 +1,28 @@
+actions:
+  - name: c
+    desc: commit changes to current branch
+    content:
+      - command: git add -A
+      - command: git commit -m "${m}"
+    default:
+      - m: no-commit-message
+      - r: origin
+
+  - name: p
+    desc: push current branch
+    content:
+      - command: git push ${r} ${b}
+    default:
+      - r: origin
+      - b: $(git symbolic-ref --short -q HEAD)
+
+  - name: cp
+    desc: commit & push current branch
+    content:
+      - command: git add -A
+      - command: git commit -m "${m}"
+      - command: git push ${r} ${b}
+    default:
+      - m: no-commit-message
+      - r: origin
+      - b: $(git symbolic-ref --short -q HEAD)
