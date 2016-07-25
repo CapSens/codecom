@@ -7,7 +7,7 @@ This gem automatically generates YARD compatible comments (with arguments) to yo
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'capsens-codecom', git: 'projects.capsens.eu/engines/capsens-codecom'
+gem 'capsens-codecom', git: 'git@projects.capsens.eu:engines/capsens-codecom.git'
 ```
 
 And then execute:
