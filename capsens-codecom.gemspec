@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Capsens::Codecom::VERSION
   spec.authors       = ['Yassine Zenati']
   spec.email         = ['yassine@capsens.eu']
-  spec.summary       = %q{This gem adds a code comment template above your lovely methods.}
-  spec.description   = %q{This gem adds a code comment template above your lovely methods.}
+  spec.summary       = %q{This gem automatically generates YARD compatible pre-documentation comments for your beloved methods.}
+  spec.description   = %q{This gem automatically generates YARD compatible pre-documentation comments for your beloved methods.}
   spec.homepage      = 'https://www.capsens.eu'
   spec.license       = 'MIT'
 
