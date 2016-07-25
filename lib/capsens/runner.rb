@@ -3,42 +3,6 @@ module Capsens
     class Runner
       attr_accessor :ignored_methods
 
-      def initialize(force = false)
-        self.ignored_methods = [ :initialize, :permitted_params ]
-
-        Dir.glob("./**/*.rb").reject { |path| path.include?('spec') || path.include?('.git') }.each do |path|
-          comments = []
-          temp_file = Tempfile.new(SecureRandom.hex)
-
-          begin
-            File.open(path).each_with_index do |line, index|
-              if line.strip.start_with?('#')
-                comments.push(line)
-              else
-                if line.strip.start_with?('def ')
-                  condition_0 = force || comments.none?
-                  condition_1 = ignored_methods.include?(extract_method_name_without_arguments(line).to_sym)
-                  data = (condition_0 && !condition_1) ? process_line(line, index) : comments.join
-                  temp_file.print(data)
-                else
-                  temp_file.print(comments.join)
-                end
-
-                comments = []
-                temp_file.write line
-              end
-            end
-
-            temp_file.print(comments.join)
-            temp_file.close
-            FileUtils.mv(temp_file.path, path)
-          ensure
-            temp_file.close
-            temp_file.unlink
-          end
-        end
-      end
-
       # Describe here what the method should be used for.
       # Remember to add use case examples if possible.
       #
@@ -223,6 +187,42 @@ module Capsens
         template.strip.split("\n").map(&:strip).map do |slice|
           slice.prepend(' ' * index)
         end.join("\n") + "\n"
+      end
+      
+      def initialize(force = false)
+        self.ignored_methods = [ :initialize, :permitted_params ]
+
+        Dir.glob("./**/*.rb").reject { |path| path.include?('spec') || path.include?('.git') }.each do |path|
+          comments = []
+          temp_file = Tempfile.new(SecureRandom.hex)
+
+          begin
+            File.open(path).each_with_index do |line, index|
+              if line.strip.start_with?('#')
+                comments.push(line)
+              else
+                if line.strip.start_with?('def ')
+                  condition_0 = force || comments.none?
+                  condition_1 = ignored_methods.include?(extract_method_name_without_arguments(line).to_sym)
+                  data = (condition_0 && !condition_1) ? process_line(line, index) : comments.join
+                  temp_file.print(data)
+                else
+                  temp_file.print(comments.join)
+                end
+
+                comments = []
+                temp_file.write line
+              end
+            end
+
+            temp_file.print(comments.join)
+            temp_file.close
+            FileUtils.mv(temp_file.path, path)
+          ensure
+            temp_file.close
+            temp_file.unlink
+          end
+        end
       end
 
       # Describe here what the method should be used for.
