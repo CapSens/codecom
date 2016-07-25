@@ -8,7 +8,6 @@ module Capsens
     class Runner
       attr_accessor :previous_comment_index
 
-
       def initialize
         self.previous_comment_index = -1
 
@@ -37,6 +36,7 @@ module Capsens
         end
       end
 
+      def template_options(line)
         {
           author_name: extract_author_name,
           method_name: extract_method_name(line),
