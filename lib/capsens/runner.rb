@@ -6,7 +6,7 @@ module Capsens
       def initialize(force = false)
         self.ignored_methods = [ :initialize, :permitted_params ]
 
-        Dir.glob("./**/*.rb").reject { |path| path.include?('app') }.each do |path|
+        Dir.glob("./**/*.rb").reject { |path| path.include?('spec') || path.include?('.git') }.each do |path|
           comments = []
           temp_file = Tempfile.new(SecureRandom.hex)
 
