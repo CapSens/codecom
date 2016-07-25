@@ -1,15 +1,13 @@
 # Capsens::Codecom
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/capsens/codecom`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+This gem automaticaly generates YARD compatible comments to your beloved methods.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'capsens-codecom'
+gem 'capsens-codecom', git: 'projects.capsens.eu/engines/capsens-codecom'
 ```
 
 And then execute:
@@ -22,7 +20,109 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Run the following command in app root directory:
+
+```
+codecom
+```
+
+Here is the code before:
+
+```ruby
+module Example
+    class Runner
+        def template_options(line)
+            {
+              author_name: extract_author_name,
+              method_name: extract_method_name(line),
+              params_name: extract_method_arguments(line)
+            }
+        end
+        
+        def black_listed_methods
+            [ :initialize, :permitted_params ]
+        end
+        
+        def replace_template(data, options = {})
+            data = data.gsub('%{method_name}', options.fetch(:method_name))
+            data = data.gsub('%{author_name}', options.fetch(:author_name))
+            data
+        end
+    end
+end
+```
+
+And here is the code automatically commented after:
+
+```ruby
+module Example
+    class Runner
+    
+        # @engine capsens-codecom
+        # @timing 1469433025
+        #
+        # Describe here what the method should be used for.
+        # Remember to add use case examples if possible.
+        #
+        # @author Yassine Zenati
+        #
+        # Examples:
+        #
+        #   template_options(line)
+        #   #=> @return Expected returned value
+        #
+        # @param line [Class] Write param definition here.
+        # @return [Class] Describe what the method should return.
+        def template_options(line)
+            {
+              author_name: extract_author_name,
+              method_name: extract_method_name(line),
+              params_name: extract_method_arguments(line)
+            }
+        end
+        
+        # @engine capsens-codecom
+        # @timing 1469433025
+        #
+        # Describe here what the method should be used for.
+        # Remember to add use case examples if possible.
+        #
+        # @author Yassine Zenati
+        #
+        # Examples:
+        #
+        #   black_listed_methods
+        #   #=> @return Expected returned value
+        #
+        # @return [Class] Describe what the method should return.
+        def black_listed_methods
+            [ :initialize, :permitted_params ]
+        end
+        
+        # @engine capsens-codecom
+        # @timing 1469433025
+        #
+        # Describe here what the method should be used for.
+        # Remember to add use case examples if possible.
+        #
+        # @author Yassine Zenati
+        #
+        # Examples:
+        #
+        #   replace_template(data, options = {})
+        #   #=> @return Expected returned value
+        #
+        # @param data [Class] Write param definition here.
+        # @param options = {} [Class] Write param definition here.
+        # @return [Class] Describe what the method should return.
+        def replace_template(data, options = {})
+            data = data.gsub('%{method_name}', options.fetch(:method_name))
+            data = data.gsub('%{author_name}', options.fetch(:author_name))
+            data
+        end
+    end
+end
+```
 
 ## Development
 
