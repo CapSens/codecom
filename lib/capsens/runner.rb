@@ -20,16 +20,16 @@ module Capsens
                   condition_1 = ignored_methods.include?(extract_method_name_without_arguments(line).to_sym)
                   data = (condition_0 && !condition_1) ? process_line(line, index) : comments.join
                   temp_file.print(data)
-                  comments = []
                 else
                   temp_file.print(comments.join)
-                  comments = []
                 end
 
+                comments = []
                 temp_file.write line
               end
             end
 
+            temp_file.print(comments.join)
             temp_file.close
             FileUtils.mv(temp_file.path, path)
           ensure
