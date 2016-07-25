@@ -3,6 +3,8 @@ require 'thor'
 module Capsens
   module Codecom
     class CLI < Thor
+      default_task :start
+
       desc :start, "starts engine to add missing comments"
       option :force
 

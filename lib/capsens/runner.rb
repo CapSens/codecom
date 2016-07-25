@@ -3,18 +3,6 @@ module Capsens
     class Runner
       attr_accessor :ignored_methods
 
-      # Describe here what the method should be used for.
-      # Remember to add use case examples if possible.
-      #
-      # @author Yassine Zenati
-      #
-      # Examples:
-      #
-      #   initialize(force = false)
-      #   #=> @return Expected returned value
-      #
-      # @param force = false [Class] Write param definition here.
-      # @return [Class] Describe what the method should return.
       def initialize(force = false)
         self.ignored_methods = [ :initialize, :permitted_params ]
 
@@ -29,7 +17,7 @@ module Capsens
               else
                 if line.strip.start_with?('def ')
                   condition_0 = force || comments.none?
-                  condition_1 = ignored_methods.include?(extract_method_name(line).to_sym)
+                  condition_1 = ignored_methods.include?(extract_method_name_without_arguments(line).to_sym)
 
                   if condition_0 && !condition_1
                     temp_file.print(process_line(line, index))
@@ -148,6 +136,23 @@ module Capsens
       #
       # Examples:
       #
+      #   extract_method_name_without_arguments(line)
+      #   #=> @return Expected returned value
+      #
+      # @param line [Class] Write param definition here.
+      # @return [Class] Describe what the method should return.
+      def extract_method_name_without_arguments(line)
+        name = extract_method_name(line)
+        name.include?('(') ? name.split('(')[0] : name.split(' ')[0]
+      end
+
+      # Describe here what the method should be used for.
+      # Remember to add use case examples if possible.
+      #
+      # @author Yassine Zenati
+      #
+      # Examples:
+      #
       #   process_line(line, index)
       #   #=> @return Expected returned value
       #
@@ -158,8 +163,7 @@ module Capsens
         method_name = template_options(line).fetch(:method_name)
 
         unless ignored_methods.include?(method_name.to_sym)
-          options = [template, template_options(line)]
-          replaced_template = replace_template(*options)
+          replaced_template = replace_template(template, template_options(line))
           indent_template(replaced_template, line.index('def '))
         end
       end
