@@ -1,6 +1,6 @@
 # Capsens::Codecom
 
-This gem automatically generates YARD compatible comments (with arguments) to your beloved methods.
+This gem automatically generates YARD compatible pre-documentation comments for your beloved methods.
 
 ## Installation
 
@@ -41,11 +41,11 @@ module Example
               params_name: extract_method_arguments(line)
             }
         end
-        
+
         def black_listed_methods
             [ :initialize, :permitted_params ]
         end
-        
+
         def replace_template(data, options = {})
             data = data.gsub('%{method_name}', options.fetch(:method_name))
             data = data.gsub('%{author_name}', options.fetch(:author_name))
@@ -82,7 +82,7 @@ module Example
               params_name: extract_method_arguments(line)
             }
         end
-        
+
         # @engine capsens-codecom
         # @timing 1469433025
         #
@@ -100,7 +100,7 @@ module Example
         def black_listed_methods
             [ :initialize, :permitted_params ]
         end
-        
+
         # @engine capsens-codecom
         # @timing 1469433025
         #
