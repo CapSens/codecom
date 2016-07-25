@@ -30,6 +30,8 @@ The gem will automatically find out your name from the git repo and all method p
 
 Here is the code before:
 
+## Demo
+
 ```ruby
 module Example
     class Runner
