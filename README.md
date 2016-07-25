@@ -1,6 +1,6 @@
 # Capsens::Codecom
 
-This gem automaticaly generates YARD compatible comments to your beloved methods.
+This gem automatically generates YARD compatible comments (with arguments) to your beloved methods.
 
 ## Installation
 
@@ -57,7 +57,6 @@ And here is the code automatically commented after:
 ```ruby
 module Example
     class Runner
-    
         # @engine capsens-codecom
         # @timing 1469433025
         #
