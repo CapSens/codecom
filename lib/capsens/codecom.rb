@@ -58,7 +58,8 @@ module Capsens
       end
 
       def extract_git_revision
-        `git --git-dir #{File.expand_path('../..', File.dirname(__FILE__))}/.git rev-parse --short HEAD`.strip
+        path = File.expand_path('../..', File.dirname(__FILE__))
+        `git --git-dir #{path}/.git rev-parse --short HEAD`.strip
       end
 
       def extract_method_name(line)
@@ -103,7 +104,7 @@ module Capsens
       def template
         "
         # @engine capsens-codecom
-        # @commit #{extract_git_revision}
+        # @timing #{Time.now.to_i}
         #
         # Describe here what the method should be used for.
         # Remember to add use case examples if possible.
