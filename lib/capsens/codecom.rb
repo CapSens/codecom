@@ -11,6 +11,12 @@ module Capsens
       attr_accessor :configuration
     end
 
+
+
+
+
+
+
     # Describe here what the method should be used for.
     # Remember to add use case examples if possible.
     #

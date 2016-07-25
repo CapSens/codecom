@@ -18,12 +18,8 @@ module Capsens
                 if line.strip.start_with?('def ')
                   condition_0 = force || comments.none?
                   condition_1 = ignored_methods.include?(extract_method_name_without_arguments(line).to_sym)
-
-                  if condition_0 && !condition_1
-                    temp_file.print(process_line(line, index))
-                  else
-                    temp_file.print(comments.join)
-                  end
+                  data = (condition_0 && !condition_1) ? process_line(line, index) : comments.join
+                  temp_file.print(data)
                 else
                   comments = []
                 end
