@@ -20,7 +20,9 @@ module Capsens
                   condition_1 = ignored_methods.include?(extract_method_name_without_arguments(line).to_sym)
                   data = (condition_0 && !condition_1) ? process_line(line, index) : comments.join
                   temp_file.print(data)
+                  comments = []
                 else
+                  temp_file.print(comments.join)
                   comments = []
                 end
 
