@@ -189,17 +189,6 @@ module Capsens
         end.join("\n") + "\n"
       end
 
-      # Describe here what the method should be used for.
-      # Remember to add use case examples if possible.
-      #
-      # @author Yassine Zenati
-      #
-      # Examples:
-      #
-      #   initialize
-      #   #=> @return Expected returned value
-      #
-      # @return [Class] Describe what the method should return.
       def initialize
         process_configuration
         process_comments
@@ -233,12 +222,22 @@ module Capsens
       #
       # @return [Class] Describe what the method should return.
       def process_rspecs
-        started_path    = configuration['rspec']['started_path']
+        source_path     = configuration['rspec']['source_path']
+        destin_path     = configuration['rspec']['destin_path']
         ignored_paths   = configuration['rspec']['ignored_paths']
         ignored_methods = configuration['rspec']['ignored_methods']
 
-        find_files_without(started_path, ignored_paths, "*_spec.rb").each do |path|
-          puts path
+        find_files_without(source_path, ignored_paths).each do |path|
+          spath = path.split("./#{source_path}/")[1]
+          dpath = "./#{destin_path}/#{spath}".gsub('.rb', '_spec.rb')
+
+          file = if File.exists?(dpath)
+            File.open(dpath, 'r+')
+          else
+            FileUtils.mkdir_p(File.dirname(dpath))
+            file = File.new(dpath, 'w+')
+          end
+
           # temp_file = Tempfile.new(SecureRandom.hex)
 
           # begin
@@ -261,11 +260,11 @@ module Capsens
       #
       # @return [Class] Describe what the method should return.
       def process_comments
-        started_path    = configuration['comments']['started_path']
+        source_path    = configuration['comments']['source_path']
         ignored_paths   = configuration['comments']['ignored_paths']
         ignored_methods = configuration['comments']['ignored_methods']
 
-        find_files_without(started_path, ignored_paths).each do |path|
+        find_files_without(source_path, ignored_paths).each do |path|
           comments = []
           temp_file = Tempfile.new(SecureRandom.hex)
 
@@ -308,15 +307,16 @@ module Capsens
       #
       # Examples:
       #
-      #   find_files_without(started_path, ignored_paths)
+      #   find_files_without(source_path, ignored_paths)
       #   #=> @return Expected returned value
       #
-      # @param started_path [Class] Write param definition here.
+      # @param source_path [Class] Write param definition here.
       # @param ignored_paths [Class] Write param definition here.
       # @return [Class] Describe what the method should return.
-      def find_files_without(started_path, ignored_paths, end_with = "*.rb")
-        files_paths = Dir.glob("./#{started_path}/**/#{end_with}")
+      def find_files_without(source_path, ignored_paths, end_with = "*.rb")
+        files_paths = Dir.glob("./#{source_path}/**/#{end_with}")
         files_paths.select do |file_path|
+          puts file_path
           ignored_paths.map do |path|
             file_path.include?("/#{path}/")
           end.none?
@@ -337,6 +337,16 @@ module Capsens
       # @return [Class] Describe what the method should return.
       def template(template_name = 'template.txt')
         File.read([File.dirname(__FILE__), template_name].join('/'))
+      end
+
+      def rspec_template
+        "
+        require 'rails_helper'
+
+        RSpec.describe %{class}, type: %{class_type} do
+
+        end
+        "
       end
     end
   end

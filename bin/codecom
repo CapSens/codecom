@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby -U
 
 require 'capsens/codecom'
-Capsens::Codecom::CLI.start(ARGV)
+Capsens::Codecom::Runner.new
