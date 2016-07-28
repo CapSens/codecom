@@ -188,7 +188,7 @@ module Capsens
           slice.prepend(' ' * index)
         end.join("\n") + "\n"
       end
-      
+
       def initialize(force = false)
         self.ignored_methods = [ :initialize, :permitted_params ]
 
@@ -225,31 +225,8 @@ module Capsens
         end
       end
 
-      # Describe here what the method should be used for.
-      # Remember to add use case examples if possible.
-      #
-      # @author Yassine Zenati
-      #
-      # Examples:
-      #
-      #   template
-      #   #=> @return Expected returned value
-      #
-      # @return [Class] Describe what the method should return.
-      def template
-        "
-        # Describe here what the method should be used for.
-        # Remember to add use case examples if possible.
-        #
-        # @author %{author_name}
-        #
-        # Examples:
-        #
-        #   %{method_name}
-        #   #=> @return Expected returned value
-        # %{params}
-        # @return [Class] Describe what the method should return.
-        "
+      def template(template_name = 'template.txt')
+        File.read([File.dirname(__FILE__), template_name].join('/'))
       end
     end
   end

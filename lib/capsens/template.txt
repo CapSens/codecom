@@ -1,0 +1,11 @@
+# Describe here what the method should be used for.
+# Remember to add use case examples if possible.
+#
+# @author %{author_name}
+#
+# Examples:
+#
+#   %{method_name}
+#   #=> @return Expected returned value
+# %{params}
+# @return [Class] Describe what the method should return.
