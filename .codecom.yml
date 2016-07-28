@@ -1,0 +1,9 @@
+comments:
+  started_path: '.'
+  ignored_paths: ['spec', 'bin']
+  ignored_methods: ['initialize', 'permitted_params']
+
+rspec:
+  started_path: 'spec'
+  ignored_paths: ['models', 'views', 'controllers']
+  ignored_methods: [ ]

@@ -1,7 +1,10 @@
+require 'yaml'
+require 'ostruct'
+
 module Capsens
   module Codecom
     class Runner
-      attr_accessor :ignored_methods
+      attr_accessor :configuration
 
       # Describe here what the method should be used for.
       # Remember to add use case examples if possible.
@@ -190,9 +193,21 @@ module Capsens
       end
 
       def initialize(force = false)
-        self.ignored_methods = [ :initialize, :permitted_params ]
+        process_configuration
+        process_comments
+        process_rspecs
+      end
 
-        Dir.glob("./**/*.rb").reject { |path| path.include?('spec') || path.include?('.git') }.each do |path|
+      def process_configuration
+        self.configuration = YAML::load(File.read('.codecom.yml'))
+      end
+
+      def process_comments
+        started_path    = configuration['comments']['started_path']
+        ignored_paths   = configuration['comments']['ignored_paths']
+        ignored_methods = configuration['comments']['ignored_methods']
+
+        find_files_without(started_path, ignored_paths).each do |path|
           comments = []
           temp_file = Tempfile.new(SecureRandom.hex)
 
@@ -202,9 +217,12 @@ module Capsens
                 comments.push(line)
               else
                 if line.strip.start_with?('def ')
+                  method_name = extract_method_name_without_arguments(line).to_sym
+
                   condition_0 = force || comments.none?
-                  condition_1 = ignored_methods.include?(extract_method_name_without_arguments(line).to_sym)
-                  data = (condition_0 && !condition_1) ? process_line(line, index) : comments.join
+                  condition_1 = !ignored_methods.include?(method_name)
+
+                  data = (condition_0 && condition_1) ? process_line(line, index) : comments.join
                   temp_file.print(data)
                 else
                   temp_file.print(comments.join)
@@ -225,6 +243,27 @@ module Capsens
         end
       end
 
+      def find_files_without(started_path, ignored_paths)
+        files_paths = Dir.glob("./#{started_path}/**/*.rb")
+        files_paths.select do |file_path|
+          ignored_paths.map do |path|
+            file_path.include?(path)
+          end.none?
+        end
+      end
+
+      # Describe here what the method should be used for.
+      # Remember to add use case examples if possible.
+      #
+      # @author Yassine Zenati
+      #
+      # Examples:
+      #
+      #   template(template_name = 'template.txt')
+      #   #=> @return Expected returned value
+      #
+      # @param template_name = 'template.txt' [Class] Write param definition here.
+      # @return [Class] Describe what the method should return.
       def template(template_name = 'template.txt')
         File.read([File.dirname(__FILE__), template_name].join('/'))
       end
