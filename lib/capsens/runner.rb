@@ -126,11 +126,8 @@ module Capsens
       # @return [Class] Describe what the method should return.
       def process_line(line, index)
         method_name = template_options(line).fetch(:method_name)
-
-        unless ignored_methods.include?(method_name.to_sym)
-          replaced_template = replace_template(template, template_options(line))
-          indent_template(replaced_template, line.index('def '))
-        end
+        replaced_template = replace_template(template, template_options(line))
+        indent_template(replaced_template, line.index('def '))
       end
 
       # Describe here what the method should be used for.
@@ -192,16 +189,77 @@ module Capsens
         end.join("\n") + "\n"
       end
 
-      def initialize(force = false)
+      # Describe here what the method should be used for.
+      # Remember to add use case examples if possible.
+      #
+      # @author Yassine Zenati
+      #
+      # Examples:
+      #
+      #   initialize
+      #   #=> @return Expected returned value
+      #
+      # @return [Class] Describe what the method should return.
+      def initialize
         process_configuration
         process_comments
         process_rspecs
       end
 
+      # Describe here what the method should be used for.
+      # Remember to add use case examples if possible.
+      #
+      # @author Yassine Zenati
+      #
+      # Examples:
+      #
+      #   process_configuration
+      #   #=> @return Expected returned value
+      #
+      # @return [Class] Describe what the method should return.
       def process_configuration
         self.configuration = YAML::load(File.read('.codecom.yml'))
       end
 
+      # Describe here what the method should be used for.
+      # Remember to add use case examples if possible.
+      #
+      # @author Yassine Zenati
+      #
+      # Examples:
+      #
+      #   process_rspecs
+      #   #=> @return Expected returned value
+      #
+      # @return [Class] Describe what the method should return.
+      def process_rspecs
+        started_path    = configuration['rspec']['started_path']
+        ignored_paths   = configuration['rspec']['ignored_paths']
+        ignored_methods = configuration['rspec']['ignored_methods']
+
+        find_files_without(started_path, ignored_paths, "*_spec.rb").each do |path|
+          puts path
+          # temp_file = Tempfile.new(SecureRandom.hex)
+
+          # begin
+          #   File.open(path).each_with_index do |line, index|
+
+          #   end
+          # end
+        end
+      end
+
+      # Describe here what the method should be used for.
+      # Remember to add use case examples if possible.
+      #
+      # @author Yassine Zenati
+      #
+      # Examples:
+      #
+      #   process_comments
+      #   #=> @return Expected returned value
+      #
+      # @return [Class] Describe what the method should return.
       def process_comments
         started_path    = configuration['comments']['started_path']
         ignored_paths   = configuration['comments']['ignored_paths']
@@ -219,7 +277,7 @@ module Capsens
                 if line.strip.start_with?('def ')
                   method_name = extract_method_name_without_arguments(line).to_sym
 
-                  condition_0 = force || comments.none?
+                  condition_0 = comments.none?
                   condition_1 = !ignored_methods.include?(method_name)
 
                   data = (condition_0 && condition_1) ? process_line(line, index) : comments.join
@@ -243,11 +301,24 @@ module Capsens
         end
       end
 
-      def find_files_without(started_path, ignored_paths)
-        files_paths = Dir.glob("./#{started_path}/**/*.rb")
+      # Describe here what the method should be used for.
+      # Remember to add use case examples if possible.
+      #
+      # @author Yassine Zenati
+      #
+      # Examples:
+      #
+      #   find_files_without(started_path, ignored_paths)
+      #   #=> @return Expected returned value
+      #
+      # @param started_path [Class] Write param definition here.
+      # @param ignored_paths [Class] Write param definition here.
+      # @return [Class] Describe what the method should return.
+      def find_files_without(started_path, ignored_paths, end_with = "*.rb")
+        files_paths = Dir.glob("./#{started_path}/**/#{end_with}")
         files_paths.select do |file_path|
           ignored_paths.map do |path|
-            file_path.include?(path)
+            file_path.include?("/#{path}/")
           end.none?
         end
       end

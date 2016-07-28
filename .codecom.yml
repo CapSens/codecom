@@ -5,5 +5,5 @@ comments:
 
 rspec:
   started_path: 'spec'
-  ignored_paths: ['models', 'views', 'controllers']
+  ignored_paths: ['spec']
   ignored_methods: [ ]
