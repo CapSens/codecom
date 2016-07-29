@@ -1,5 +1,6 @@
 require 'yaml'
 require 'ostruct'
+require 'active_support/inflector'
 
 module Capsens
   module Codecom
@@ -184,15 +185,19 @@ module Capsens
       # @param index [Class] Write param definition here.
       # @return [Class] Describe what the method should return.
       def indent_template(template, index)
-        template.strip.split("\n").map(&:strip).map do |slice|
+        striped_template(template).map do |slice|
           slice.prepend(' ' * index)
         end.join("\n") + "\n"
+      end
+
+      def striped_template(template)
+        template.strip.split("\n").map(&:strip)
       end
 
       def initialize
         process_configuration
         process_comments
-        process_rspecs
+        process_specs
       end
 
       # Describe here what the method should be used for.
@@ -217,35 +222,60 @@ module Capsens
       #
       # Examples:
       #
-      #   process_rspecs
+      #   process_specs
       #   #=> @return Expected returned value
       #
       # @return [Class] Describe what the method should return.
-      def process_rspecs
-        source_path     = configuration['rspec']['source_path']
-        destin_path     = configuration['rspec']['destin_path']
-        ignored_paths   = configuration['rspec']['ignored_paths']
-        ignored_methods = configuration['rspec']['ignored_methods']
+      def process_specs
+        source_path     = configuration['specs']['source_path']
+        destin_path     = configuration['specs']['destin_path']
+        ignored_paths   = configuration['specs']['ignored_paths']
+        ignored_methods = configuration['specs']['ignored_methods']
 
         find_files_without(source_path, ignored_paths).each do |path|
+          next unless path.include?('/models/') || path.include?('/controllers/') || path.include?('/helpers/')
+          @spec_template = indent_template(spec_template, 0)
+          @spec_describe_template = spec_describe_template.gsub(' ' * 8, ' ' * 2).strip.prepend(' ' * 2)
+
           spath = path.split("./#{source_path}/")[1]
           dpath = "./#{destin_path}/#{spath}".gsub('.rb', '_spec.rb')
 
-          file = if File.exists?(dpath)
-            File.open(dpath, 'r+')
-          else
+          unless File.exists?(dpath)
+            methods_names_source = extract_methods_names_from_file(path)
+            specs_methods_to_string = methods_names_source.map do |method_name|
+              @spec_describe_template.gsub('%{method_name}', method_name)
+            end.join("\n\n")
+
+            @spec_template = @spec_template.gsub('%{class}',      extract_spec_name(path))
+            @spec_template = @spec_template.gsub('%{methods}',    specs_methods_to_string)
+            @spec_template = @spec_template.gsub('%{class_type}', extract_spec_type(path))
+
             FileUtils.mkdir_p(File.dirname(dpath))
-            file = File.new(dpath, 'w+')
+            File.new(dpath, 'w+').puts(@spec_template)
           end
-
-          # temp_file = Tempfile.new(SecureRandom.hex)
-
-          # begin
-          #   File.open(path).each_with_index do |line, index|
-
-          #   end
-          # end
         end
+      end
+
+      def extract_spec_name(path)
+        return path.split('/models/')[1].split('/').map(&:capitalize).join('::').gsub('.rb', '').classify      if path.include?('/models/')
+        return path.split('/helpers/')[1].split('/').map(&:capitalize).join('::').gsub('.rb', '').classify     if path.include?('/helpers/')
+        return path.split('/controllers/')[1].split('/').map(&:capitalize).join('::').gsub('.rb', '').classify if path.include?('/controllers/')
+      end
+
+      def extract_spec_type(path)
+        return ':model'      if path.include?('/models/')
+        return ':helper'     if path.include?('/helpers/')
+        return ':controller' if path.include?('/controllers/')
+      end
+
+      def extract_methods_names_from_file(path)
+        methods_names = []
+        File.open(path).each_with_index do |line, index|
+          if line.strip.start_with?('def ')
+            methods_names.push(extract_method_name_without_arguments(line))
+          end
+        end
+        methods_names
       end
 
       # Describe here what the method should be used for.
@@ -260,7 +290,7 @@ module Capsens
       #
       # @return [Class] Describe what the method should return.
       def process_comments
-        source_path    = configuration['comments']['source_path']
+        source_path     = configuration['comments']['source_path']
         ignored_paths   = configuration['comments']['ignored_paths']
         ignored_methods = configuration['comments']['ignored_methods']
 
@@ -274,7 +304,7 @@ module Capsens
                 comments.push(line)
               else
                 if line.strip.start_with?('def ')
-                  method_name = extract_method_name_without_arguments(line).to_sym
+                  method_name = extract_method_name_without_arguments(line)
 
                   condition_0 = comments.none?
                   condition_1 = !ignored_methods.include?(method_name)
@@ -316,7 +346,6 @@ module Capsens
       def find_files_without(source_path, ignored_paths, end_with = "*.rb")
         files_paths = Dir.glob("./#{source_path}/**/#{end_with}")
         files_paths.select do |file_path|
-          puts file_path
           ignored_paths.map do |path|
             file_path.include?("/#{path}/")
           end.none?
@@ -339,12 +368,22 @@ module Capsens
         File.read([File.dirname(__FILE__), template_name].join('/'))
       end
 
-      def rspec_template
+      def spec_template
         "
         require 'rails_helper'
 
         RSpec.describe %{class}, type: %{class_type} do
+          %{methods}
+        end
+        "
+      end
 
+      def spec_describe_template
+        "
+        describe '#%{method_name}' do
+          it 'should be tested and documented' do
+            expect(true).to eq(false)
+          end
         end
         "
       end

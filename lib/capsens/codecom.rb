@@ -1,5 +1,4 @@
 require 'capsens/codecom/version'
-require 'capsens/codecom/cli'
 require 'capsens/runner'
 require 'securerandom'
 require 'fileutils'
