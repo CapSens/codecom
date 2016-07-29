@@ -246,9 +246,11 @@ module Capsens
               @spec_describe_template.gsub('%{method_name}', method_name)
             end.join("\n\n")
 
-            @spec_template = @spec_template.gsub('%{class}',      extract_spec_name(path))
-            @spec_template = @spec_template.gsub('%{methods}',    specs_methods_to_string)
-            @spec_template = @spec_template.gsub('%{class_type}', extract_spec_type(path))
+            @spec_template = @spec_template.gsub('%{class}',        extract_spec_name(path))
+            @spec_template = @spec_template.gsub('%{methods}',      specs_methods_to_string)
+            @spec_template = @spec_template.gsub('%{file_path}'),   path)
+            @spec_template = @spec_template.gsub('%{class_type}'),  extract_spec_type(path))
+            @spec_template = @spec_template.gsub('%{author_name}'), extract_author_name)
 
             FileUtils.mkdir_p(File.dirname(dpath))
             File.new(dpath, 'w+').puts(@spec_template)
@@ -380,6 +382,10 @@ module Capsens
 
       def spec_describe_template
         "
+        # Make sure to handle all possible cases for this method.
+        #
+        # @author %{author_name}
+        # @path %{file_path}
         describe '#%{method_name}' do
           it 'should be tested and documented' do
             expect(true).to eq(false)
